@@ -20,3 +20,5 @@ autoe.merge_images(image, reconstruct_stdev)
 
 #animation with standard deviation
 autoe.slicing_animation(image, 100)
+
+

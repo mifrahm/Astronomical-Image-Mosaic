@@ -152,15 +152,16 @@ def merge_images(base, overlay):
 
     """
 
-    # apply color scale on images
-    image_c = color_image(base)
-    reconstruct_c = color_image(overlay)
+    # scale images
+    image_c = scale_image(base)
+    reconstruct_c = scale_image(overlay)
 
     #output of combined images
     merge = cv2.addWeighted(reconstruct_c, 1, image_c, 1, 0, dtype=cv2.CV_64F)
-    merge_c = color_image(merge)
-    cv2.imshow("Merged Image", merge_c)
-    cv2.waitKey(0)
+
+    #display image
+    plt.imshow(merge)
+    plt.show()
 
 
 def open_fits_file(file):
@@ -302,11 +303,12 @@ def slicing_animation(image, size):
     font = cv2.FONT_HERSHEY_SIMPLEX
     top_corner = (10, 30)
     font_scale = 1.0
-    font_color = (0, 0, 255)
+    font_color = (255, 0, 0)
     line_type = 3
 
     i = 0
     ext = size//2
+    
 
     for y in range(0, i_h-ext, ext):       
         for x in range(0, i_w-ext, ext):
@@ -318,11 +320,12 @@ def slicing_animation(image, size):
 
             # create two copies of the original image -- one for
             # the overlay and one for the final output image
-            overlay = color_image(deepcopy(image))
-            output = color_image(deepcopy(image))
+            # scale image so that RGB color can be applied
+            overlay = scale_image(deepcopy(image))
+            output = scale_image(deepcopy(image))
 
             # draw a red rectangle
-            cv2.rectangle(overlay, start_point, end_point,(0, 0, 255), -1)
+            cv2.rectangle(overlay, start_point, end_point,(255, 0, 0), -1)
            
             # apply the overlay
             cv2.addWeighted(overlay, alpha, output, 1.0 - alpha, 0, output)
@@ -331,26 +334,32 @@ def slicing_animation(image, size):
             cv2.putText(output, "Standard Dev={}".format(np.std(samples[i])), top_corner, font, font_scale, font_color, line_type)
             
             # show the output image
-            cv2.imshow("Output", output)
-            cv2.waitKey(1)
+            #cv2.imshow("Output", output)
+            #cv2.waitKey(1)
+
+            # show the output image
+            plt.imshow(output)
+            plt.show(block=False)
+            plt.pause(.1)
+            plt.close()
            
             i+=1
 
 
 
 #supporting functions for animate_slice
-def color_image(image):
+def scale_image(img):
     
     """
     The purpose of this function is to normalize an image and apply colorMap in order to view by openCV.
     
     Parameters
     ----------
-    image: array, shape = (image_height, image_width)
+    img: array, shape = (image_height, image_width)
 
     Returns
     -------
-    color : array, shape = image_size
+    img : array, shape = image_size
     the processed image
     
     """
@@ -358,20 +367,33 @@ def color_image(image):
     #define the scale range
     scaler = MinMaxScaler(feature_range=(0, 255))
 
+    #check to see if image can fit in ? x 3 matrix
+    if (img.shape[1] % 3 != 0):
+        print('not modulus 3')
+        
+        #calculate how many columns need to be added
+        add = 3 - (img.shape[1]%3)
+
+        #add columns
+        image = np.pad(img, [(0,0),(0,add)], mode='constant', constant_values=np.average(img))
+
+    else:
+         image = img
+
     #reshape image array
     temp_image = image.reshape(-1, 3)
     temp_scale = scaler.fit_transform(temp_image)
     scaled = temp_scale.reshape(image.shape)
 
     #change to uint8 to apply ColorMap
-    transform = np.uint8(scaled)
+    img = np.uint8(scaled)
 
     #store new image with colorMap
     #for list of colormaps, see: https://gitlab.com/cvejarano-oss/cmapy/blob/master/docs/colorize_all_examples.md
-    color = cv2.applyColorMap(transform, cmapy.cmap('viridis'))
-    #color = cv2.applyColorMap(transform, cv2.COLORMAP_JET)  #cv2 colormap options
+    #color = cv2.applyColorMap(img, cmapy.cmap('viridis'))
+    #color = cv2.applyColorMap(img, cv2.COLORMAP_JET)  #cv2 colormap options
 
-    return color
+    return img
 
 
 def pad_image(image, sample_length):
