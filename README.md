@@ -37,5 +37,5 @@ This function is similar to the function above however the difference is that it
 This function takes in two image and displays merged image. This is useful to use with the original image and the reconstructed image with the standard deviation to see which area of the astronomical image has the more activity.
 
 ### Slicing animation
-This function illustrates the image slicing activity and the prints out the standard deviation of each square.
+This function illustrates the image slicing activity and then prints out the standard deviation of each square.
 
