@@ -180,6 +180,11 @@ def open_fits_file(file):
     
     image_file = download_file(file, cache=True)
     img = fits.getdata(image_file)
+
+    #error checking
+    if not (img.ndim == 2):
+        raise ValueError('Incompatible file. Array must be 2D')
+
     return img
 
 
@@ -204,6 +209,7 @@ def print_img_details(img):
     print('Image ndim: {}'.format(img.ndim))
     print('Image size: {}'.format(img.size)) 
     print('Standard Deviation {}'.format(np.std(img)))
+    
     plt.imshow(img)
     plt.show()
 
@@ -369,7 +375,6 @@ def scale_image(img):
 
     #check to see if image can fit in ? x 3 matrix
     if (img.shape[1] % 3 != 0):
-        print('not modulus 3')
         
         #calculate how many columns need to be added
         add = 3 - (img.shape[1]%3)
