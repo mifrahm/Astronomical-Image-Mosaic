@@ -12,7 +12,7 @@ This project contains the following functionalities
 * Merge original image and standard deviation squares
 * Slicing animation to illustrate the image slicing
 
-A illustration of these functionalities can be viewed in this Jupiter notebook.
+A illustration of these functionalities can be viewed in this [Jupyter notebook](https://github.com/mifrahm/Astronomical-Image-Mosaic/blob/master/Example.ipynb).
 
 -------
 
