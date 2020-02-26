@@ -10,7 +10,7 @@ import cmapy
 import cv2
 
 
-def calculate_stdev(samples, image_size):
+def calculate_stdev(samples, image_size, ext):
 
     """
     
@@ -22,6 +22,8 @@ def calculate_stdev(samples, image_size):
 
     image_size : tuple of ints (image_height, image_width)
 
+    ext: The step/stride length of each sample
+
     Returns
     -------
     img : array, shape = image_size
@@ -31,16 +33,13 @@ def calculate_stdev(samples, image_size):
 
     #get length of the square sample
     p_l = samples.shape[1]
-    
-    #calculate ext step
-    ext = p_l//2
 
     #create array with equal square
     image = np.zeros(image_size)
     i_h, i_w = image.shape[:2] 
 
     #pad image
-    img = pad_image(image, p_l)
+    img = pad_image(image, p_l, ext)
 
     #get the padded height and width
     pd_h, pd_w = img.shape[:2]  
@@ -57,15 +56,15 @@ def calculate_stdev(samples, image_size):
 
         #equalise the columns
         if (w != 0):   
-            img[h:h + p_l, w:w + ext] /= 2
+            img[h:h + p_l, w:w + (p_l-ext)] /= 2
 
         #equalise the height and width overlap
         if (h != 0 and w != 0):
-            img[h:h + ext, w + ext:w + p_l] /= 2
+            img[h:h + (p_l-ext), w + (p_l-ext):w + p_l] /= 2
             
         #equalise the height overlap
         elif (h != 0):
-            img[h:h + ext, w:w + p_l] /= 2
+            img[h:h + (p_l-ext), w:w + p_l] /= 2
 
     #remove excess columns
     img = np.delete(img, slice(i_h, pd_h), axis=0)
@@ -80,7 +79,7 @@ def calculate_stdev(samples, image_size):
     return img
 
 
-def extract_samples(org_image, sample_length):
+def extract_samples(org_image, sample_length, step):
     """
     Reshape a 2D image into a collection of samples. This is based on the SKLearn library.
 
@@ -97,6 +96,8 @@ def extract_samples(org_image, sample_length):
 
     sample_length : the length of the desired square sample, e.g. if 100 x 100 square then enter 100.
 
+    ext: The step/stride length of each sample
+
     Returns
     -------
     samples : array, shape = (n_samples, sample_height, sample_width) or
@@ -107,11 +108,8 @@ def extract_samples(org_image, sample_length):
 
     """
 
-    # calculate extraction step
-    step = sample_length //2
-
     #pad image
-    image = pad_image(org_image, sample_length) 
+    image = pad_image(org_image, sample_length, step) 
 
     # current image array height and width
     i_h, i_w = image.shape[:2]
@@ -214,7 +212,7 @@ def print_img_details(img):
     plt.show()
 
 
-def reconstruct_samples(samples, image_size):
+def reconstruct_samples(samples, image_size, ext):
 
     """
 
@@ -228,6 +226,8 @@ def reconstruct_samples(samples, image_size):
 
     image_size : tuple of ints (image_height, image_width)
 
+    ext: The step/stride length of each sample
+
     Returns
     -------
     img : array, shape = image_size
@@ -237,16 +237,13 @@ def reconstruct_samples(samples, image_size):
 
     #get dimensions of the sample
     p_h, p_w = samples.shape[1:3]
-    
-    #calculate ext step
-    ext = p_h//2
 
     #create array with equal square
     image = np.zeros(image_size)
     i_h, i_w = image.shape[:2] 
 
     #pad image
-    img = pad_image(image, p_h)
+    img = pad_image(image, p_h, ext)
 
     #get the padded height and width
     pd_h, pd_w = img.shape[:2]  
@@ -263,15 +260,15 @@ def reconstruct_samples(samples, image_size):
 
         #equalise the columns
         if (w != 0):   
-            img[h:h + p_h, w:w + ext] /= 2
+            img[h:h + p_h, w:w + (p_w-ext)] /= 2
 
         #equalise the height and width overlap
         if (h != 0 and w != 0):
-            img[h:h + ext, w + ext:w + p_w] /= 2
+            img[h:h + (p_h-ext), w + (p_w-ext):w + p_w] /= 2
             
         #equalise the height overlap
         elif (h != 0):
-            img[h:h + ext, w:w + p_w] /= 2
+            img[h:h + (p_h-ext), w:w + p_w] /= 2
 
     #remove excess columns
     img = np.delete(img, slice(i_h, pd_h), axis=0)
@@ -282,8 +279,7 @@ def reconstruct_samples(samples, image_size):
     return img
 
 
-
-def slicing_animation(image, size):
+def slicing_animation(image, size, ext):
     
     """
 
@@ -295,14 +291,15 @@ def slicing_animation(image, size):
 
     size : length of a single sample size. All sides of sample are assumed to be equal.
 
+    ext: The step/stride length of each sample
 
     """
 
     # extract samples from image
-    samples = extract_samples(image, size)
+    samples = extract_samples(image, size, ext)
 
     #Pad image before displaying animation
-    image = pad_image(image, size) #pad image
+    image = pad_image(image, size, ext) #pad image
     i_h, i_w = image.shape[:2]  # current image array height and width
 
     #text placement
@@ -313,8 +310,6 @@ def slicing_animation(image, size):
     line_type = 3
 
     i = 0
-    ext = size//2
-    
 
     for y in range(0, i_h-ext, ext):       
         for x in range(0, i_w-ext, ext):
@@ -346,11 +341,10 @@ def slicing_animation(image, size):
             # show the output image
             plt.imshow(output)
             plt.show(block=False)
-            plt.pause(.1)
+            plt.pause(.01)
             plt.close()
            
             i+=1
-
 
 
 #supporting functions for animate_slice
@@ -401,7 +395,7 @@ def scale_image(img):
     return img
 
 
-def pad_image(image, sample_length):
+def pad_image(image, sample_length, extract):
 
     """
     The pad_image function returns a resized version of an image to be able to contain equal amount of square samples and its extraction step.
@@ -412,15 +406,14 @@ def pad_image(image, sample_length):
 
     sample_length: length of square sample size
 
+    extract: The step/stride length of each sample
+
     Returns
     -------
     color : array, shape = image_size
     the processed image
     
     """
-
-    #calculate extraction step
-    extract = sample_length//2
 
     #by default this pads the images by zeros
     i_h, i_w = image.shape[:2] 

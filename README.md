@@ -1,12 +1,11 @@
 # Astronomical Image Mosaic
 This project is the preprocessing and post processing of astronomical data that will be used in a convolutional auto encoder. More about the auto encoder can be read in this paper: [Radio Galaxy Zoo: Unsupervised Clustering of Convolutionally Auto-encoded Radio-astronomical Images](https://iopscience.iop.org/article/10.1088/1538-3873/ab213d)
 
-
 ## Features
 This project contains the following functionalities
 * Open a FITS file
 * Print details of image array
-* Extract square samples from image
+* Extract square samples from image with custom extraction step length
 * Reconstruct sliced samples to original image
 * Reconstruct sliced samples with standard deviation
 * Merge original image and standard deviation squares
@@ -25,7 +24,7 @@ A illustration of these functionalities can be viewed in this [Jupyter notebook]
 * This basic functionality is used to print details of the image including: data, type, type, shape, dim, size, standard deviation. Along with displaying the image using the [matplotlib](https://matplotlib.org) library.
 
 ### Extract Square Samples
-This function extract square samples from the original image. It reshapes the 2D image into a collection of square samples by slicing the image into the desired sample square length. This function is based on the [SKLearn](https://scikit-learn.org/). 
+This function extract square samples from the original image. It reshapes the 2D image into a collection of square samples by slicing the image into the desired sample square length and extraction step, i.e. when to start the next slicing. This function is based on the [SKLearn](https://scikit-learn.org/). 
 
 ### Reconstruct sliced samples to original image
 This function takes the sliced images and reconstructs them back to the original image.
