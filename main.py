@@ -1,23 +1,23 @@
-import autoe
+import image
 
 #open fits file
-image = autoe.open_fits_file('http://data.astropy.org/tutorials/FITS-images/HorseHead.fits')
+img = image.open_fits_file('http://data.astropy.org/tutorials/FITS-images/HorseHead.fits')
 
 #print details of file
-autoe.print_img_details(image)
+image.print_img_details(img)
 
 #extract samples
-samples = autoe.extract_samples(image, 200, 10)
+samples = image.extract_samples(img, 200, 10)
 
 #reconstruct image
-reconstruct = autoe.reconstruct_samples(samples, image.shape, 10)
+reconstruct = image.reconstruct_samples(samples, img.shape, 10)
 
 #reconstruct image with standard deviation samples
-reconstruct_stdev = autoe.calculate_stdev(samples, image.shape, 10)
+reconstruct_stdev = image.calculate_stdev(samples, img.shape, 10)
 
 #overlay stdev samples over image
-autoe.merge_images(image, reconstruct_stdev)
+image.merge_images(img, reconstruct_stdev)
 
 #animation with standard deviation
-autoe.slicing_animation(image, 100, 10)
+image.slicing_animation(img, 100, 10)
 

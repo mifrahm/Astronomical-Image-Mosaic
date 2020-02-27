@@ -38,3 +38,14 @@ This function takes in two image and displays merged image. This is useful to us
 ### Slicing animation
 This function illustrates the image slicing activity and then prints out the standard deviation of each square.
 
+-------
+
+## Libraries Used
+
+* [Scikit-Learn](https://scikit-learn.org/stable/)
+* [Astropy](https://www.astropy.org/)
+* [Matplotlib](https://matplotlib.org/)
+* [NumPy](https://numpy.org/)
+* [Cmapy](https://pypi.org/project/cmapy/)
+* [OpenCV](https://opencv.org/)
+
