@@ -15,7 +15,7 @@ A illustration of these functionalities can be viewed in this [Jupyter notebook]
 
 -------
 
-## Functionalities in Detail
+# Functionalities in Detail
 
 ### Open a FITS File
 * This function is based on the [astropy](https://www.astropy.org) library which is used open a FITS file and return an image in the form of a 2D [numpy](https://numpy.org) array.
@@ -40,7 +40,7 @@ This function illustrates the image slicing activity and then prints out the sta
 
 -------
 
-## Libraries Used
+# Libraries Used
 
 * [Scikit-Learn](https://scikit-learn.org/stable/)
 * [Astropy](https://www.astropy.org/)
